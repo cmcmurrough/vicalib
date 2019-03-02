@@ -195,7 +195,7 @@ class ViCalibrator : public ceres::IterationCallback {
   // Write XML file containing configuration of camera rig.
   void WritePoses( void ) {
     FILE* f = fopen("poses.txt", "w");
-    for (int ii = 0; ii < t_wk_.size(); ii++) {
+    for (int ii = 0; ii < static_cast<int>(t_wk_.size()); ii++) {
       Eigen::Matrix<double, 6, 1> pose;
       pose = _T2Cart(t_wk_[ii]->t_wp_.matrix());
       fprintf(f, "%f\t%f\t%f\t%f\t%f\t%f\n", pose(0), pose(1), pose(2), pose(3), pose(4), pose(5));

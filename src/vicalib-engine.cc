@@ -242,7 +242,7 @@ std::shared_ptr<VicalibTask> VicalibEngine::InitTask() {
 
       } else if (type == "kb4") {
     Eigen::Vector2i size_;
-    Eigen::VectorXd params_(calibu::KannalaBrandtCamera<double>::NumParams);
+    Eigen::VectorXd params_(int(calibu::KannalaBrandtCamera<double>::NumParams));
     size_ << w, h;
     params_  << 300, 300, w/2.0, h/2.0, 0.0, 0.0, 0.0, 0.0;
     std::shared_ptr<calibu::CameraInterface<double>>
@@ -252,7 +252,7 @@ std::shared_ptr<VicalibTask> VicalibEngine::InitTask() {
 
       } else if (type == "linear") {
         Eigen::Vector2i size_;
-        Eigen::VectorXd params_(calibu::LinearCamera<double>::NumParams);
+        Eigen::VectorXd params_(int(calibu::LinearCamera<double>::NumParams));
         size_ << w, h;
         params_ << 300, 300, w/2.0, h/2.0;
         std::shared_ptr<calibu::CameraInterface<double>>
@@ -266,7 +266,7 @@ std::shared_ptr<VicalibTask> VicalibEngine::InitTask() {
 
   std::shared_ptr<hal::ImageArray> images = hal::ImageArray::Create();
   camera_->Capture(*images);
-  for (size_t i = 0; i < images->Size() && i < input_cameras.size(); ++i) {
+  for (size_t i = 0; i < static_cast<size_t>(images->Size()) && i < input_cameras.size(); ++i) {
     input_cameras[i].camera->SetSerialNumber(images->at(i)->SerialNumber());
   }
 
@@ -360,7 +360,7 @@ void VicalibEngine::WriteCalibration() {
 
     std::vector<bool> good_frames = vicalib_->GetGoodFrames( );
 
-    for (int ii = 0; ii < good_frames.size(); ii++) {
+    for (int ii = 0; ii < static_cast<int>(good_frames.size()); ii++) {
       if (good_frames[ii]) {
         std::shared_ptr<VicalibFrame<double> > frame = vicalib_->GetCalibrator().GetFrame(ii);
         pose = _T2Cart(frame->t_wp_.matrix());
@@ -518,7 +518,7 @@ bool VicalibEngine::CameraLoop() {
     for (int ii = 0; ii < images->Size(); ++ii) {
       std::shared_ptr<hal::Image> img = images->at(ii);
       if (img->Mat().channels() == 3) {
-        cv::cvtColor(img->Mat(), temp_mat, CV_BGR2GRAY);
+        cv::cvtColor(img->Mat(), temp_mat, cv::COLOR_BGR2GRAY);
       }
       memcpy((void*)img->data(), temp_mat.data,
              temp_mat.elemSize() * temp_mat.rows * temp_mat.cols);
